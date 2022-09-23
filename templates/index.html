@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Text to Speech</title>
+    <script src="../static/js/jquery-3.6.1.js"></script>
+</head>
+<body>
+<h2>Text to Speech</h2>
+<div id="request">
+    <div id="content_area">
+        <textarea id="content" rows="30" cols="100"></textarea>
+    </div>
+    <div>
+        <input id="submit" type="button" value="Submit"/><br>
+    </div>
+</div>
+<div id="media" hidden="hidden">
+    <audio id="mp3-play" src="" controls></audio><br>
+    <a href="" id="download"><button>Download</button></a>
+</div>
+<script type="text/javascript">
+    {#Transfer base64 content into blob url#}
+    function dataURLtoBlob(dataurl) {
+            blobstr = atob(dataurl),
+            len = blobstr.length,
+            u8arr = new Uint8Array(len);
+        while (len--) {
+            u8arr[len] = blobstr.charCodeAt(len);
+        }
+        return new Blob([u8arr], {
+            type: "audio/mpeg"
+        });
+    }
+    {#Create onclick event#}
+    $(document).ready(function () {
+        $("#submit").click(function () {
+            let content = document.getElementById('content').value;
+            $.ajax({
+                url: "/tts",
+                type: "post",
+                data: {"content":content},
+                success: function (data) {
+                    {#Show the play and download butten if successfully received the audio#}
+                    document.getElementById("media").removeAttribute("hidden")
+
+                    {#Download by blob url#}
+                    let audioBlob = dataURLtoBlob(data)
+                    let blobUrl = window.URL.createObjectURL(audioBlob);
+                    document.getElementById('mp3-play').src = blobUrl;
+                    let a = document.getElementById('download')
+		            a.href = blobUrl
+		            a.download = "output.mp3"
+                },
+                error: function (data) {
+                    alert("Failed");
+                }
+            })
+        });
+    });
+</script>
+</body>
+</html>
