@@ -1,4 +1,4 @@
-# Text-to-Speech-google-cloud
+# Text to Speech Demo Using Google Cloud
 A simple TTS demo using gcloud text to speech API, using flask framework
 
 ## Dependencies installation
